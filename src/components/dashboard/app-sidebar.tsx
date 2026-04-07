@@ -89,10 +89,10 @@ export function AppSidebar() {
                     <SidebarMenuItem>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <SidebarMenuButton className="w-full h-12 flex items-center justify-between hover:bg-accent hover:text-accent-foreground rounded-lg transition-all duration-200">
+                                <SidebarMenuButton className="w-full h-12 flex items-center justify-between hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors duration-150">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
-                                            <User2 className="h-4 w-4 text-primary" />
+                                        <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center border">
+                                            <User2 className="h-4 w-4 text-muted-foreground" />
                                         </div>
                                         <div className="flex flex-col text-left overflow-hidden">
                                             <span className="text-sm font-semibold truncate leading-none mb-1">
@@ -108,17 +108,17 @@ export function AppSidebar() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
                                 side="top"
-                                className="w-[--radix-popper-anchor-width] mb-2 p-1 bg-popover/95 backdrop-blur-sm border shadow-lg rounded-xl z-50"
+                                className="w-[--radix-popper-anchor-width] mb-2 p-1 bg-popover/95 backdrop-blur-sm border rounded-lg z-50"
                             >
                                 <DropdownMenuItem asChild>
-                                    <Link href="/dashboard/settings" className="flex items-center gap-2 px-3 py-2 cursor-pointer rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors duration-200">
+                                    <Link href="/dashboard/settings" className="flex items-center gap-2 px-3 py-2 cursor-pointer rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors duration-150">
                                         <Settings className="h-4 w-4" />
                                         <span>Account Settings</span>
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={handleSignOut}
-                                    className="flex items-center gap-2 px-3 py-2 cursor-pointer rounded-lg text-destructive hover:bg-destructive/10 transition-colors duration-200"
+                                    className="flex items-center gap-2 px-3 py-2 cursor-pointer rounded-lg text-destructive hover:bg-destructive/10 transition-colors duration-150"
                                 >
                                     <LogOut className="h-4 w-4" />
                                     <span>Sign Out</span>

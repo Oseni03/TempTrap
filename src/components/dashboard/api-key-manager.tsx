@@ -139,7 +139,7 @@ export function ApiKeyManager({ initialKeys }: { initialKeys: ApiKey[] }) {
                                     <div className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                         <div className="space-y-1 min-w-0 flex-1">
                                             <div className="flex items-center gap-2">
-                                                <Key className="h-4 w-4 text-primary" />
+                                                <Key className="h-4 w-4 text-muted-foreground" />
                                                 <span className="font-semibold truncate">{apiKey.name || "Unnamed Key"}</span>
                                             </div>
                                             <div className="flex items-center gap-2 mt-2">

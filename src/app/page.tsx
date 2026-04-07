@@ -16,7 +16,7 @@ export default function LandingPage() {
                     <Link href="/sign-in" className="text-sm font-medium hover:text-primary transition-colors">
                         Sign In
                     </Link>
-                    <Button asChild className="rounded-full shadow-none hover:opacity-90">
+                    <Button asChild className="rounded-lg shadow-none hover:opacity-90">
                         <Link href="/sign-up">Get Started</Link>
                     </Button>
                 </nav>
@@ -25,7 +25,7 @@ export default function LandingPage() {
             <main className="flex-1">
                 {/* Hero Section */}
                 <section className="px-6 py-24 sm:py-32 flex flex-col items-center text-center max-w-4xl mx-auto">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold uppercase tracking-widest mb-8 animate-in fade-in slide-in-from-bottom-4">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-muted text-muted-foreground text-xs font-semibold uppercase tracking-widest mb-8 animate-in fade-in slide-in-from-bottom-4">
                         <Zap className="h-3 w-3" />
                         Disposable Email Verification API
                     </div>
@@ -37,12 +37,12 @@ export default function LandingPage() {
                         Filter out throwaway emails and improve your lead quality. A fast, reliable, and developer-friendly API for modern SaaS.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 animate-in fade-in slide-in-from-bottom-10 duration-1000">
-                        <Button asChild size="lg" className="px-8 rounded-full shadow-lg shadow-primary/20 text-lg">
+                        <Button asChild size="lg" className="px-8 rounded-lg shadow-none text-lg">
                             <Link href="/sign-up">
                                 Start Verifying Free <ArrowRight className="ml-2 h-4 w-4" />
                             </Link>
                         </Button>
-                        <Button asChild variant="outline" size="lg" className="px-8 rounded-full border-2 bg-transparent text-lg">
+                        <Button asChild variant="outline" size="lg" className="px-8 rounded-lg border bg-transparent text-lg shadow-none">
                             <Link href="#documentation">View Docs</Link>
                         </Button>
                     </div>
@@ -55,15 +55,15 @@ export default function LandingPage() {
                             <h2 className="text-3xl font-bold font-syne tracking-tight">Simple Integration</h2>
                             <div className="space-y-4">
                                 <div className="flex items-start gap-3">
-                                    <CheckCircle2 className="h-5 w-5 text-primary mt-1" />
+                                    <CheckCircle2 className="h-5 w-5 text-muted-foreground mt-1" />
                                     <p className="text-muted-foreground leading-snug">REST API that works with any language or framework.</p>
                                 </div>
                                 <div className="flex items-start gap-3">
-                                    <CheckCircle2 className="h-5 w-5 text-primary mt-1" />
+                                    <CheckCircle2 className="h-5 w-5 text-muted-foreground mt-1" />
                                     <p className="text-muted-foreground leading-snug">Instant results with 99.9% uptime guaranteed.</p>
                                 </div>
                                 <div className="flex items-start gap-3">
-                                    <CheckCircle2 className="h-5 w-5 text-primary mt-1" />
+                                    <CheckCircle2 className="h-5 w-5 text-muted-foreground mt-1" />
                                     <p className="text-muted-foreground leading-snug">Comprehensive database of 10k+ disposable domains.</p>
                                 </div>
                             </div>
@@ -98,23 +98,23 @@ export default function LandingPage() {
                 <section className="px-6 py-32 max-w-6xl mx-auto text-center">
                     <h2 className="text-4xl font-bold font-syne tracking-tight mb-16">Everything you need.</h2>
                     <div className="grid sm:grid-cols-3 gap-8 text-left">
-                        <Card className="border-border bg-card/20 shadow-none hover:bg-card/50 transition-colors p-6 rounded-2xl">
-                            <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
-                                <Key className="h-5 w-5 text-primary" />
+                        <Card className="border-border bg-card/20 shadow-none hover:bg-card/50 transition-colors p-6 rounded-lg">
+                            <div className="h-10 w-10 bg-muted rounded-lg flex items-center justify-center mb-6 text-muted-foreground">
+                                <Key className="h-5 w-5" />
                             </div>
                             <h3 className="font-bold text-lg mb-2">Key Management</h3>
                             <p className="text-sm text-muted-foreground leading-relaxed">Generate and rotate multiple keys for different staging and production environments.</p>
                         </Card>
-                        <Card className="border-border bg-card/20 shadow-none hover:bg-card/50 transition-colors p-6 rounded-2xl">
-                            <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
-                                <Activity className="h-5 w-5 text-primary" />
+                        <Card className="border-border bg-card/20 shadow-none hover:bg-card/50 transition-colors p-6 rounded-lg">
+                            <div className="h-10 w-10 bg-muted rounded-lg flex items-center justify-center mb-6 text-muted-foreground">
+                                <Activity className="h-5 w-5" />
                             </div>
                             <h3 className="font-bold text-lg mb-2">Usage Analytics</h3>
                             <p className="text-sm text-muted-foreground leading-relaxed">Real-time tracking of every request. Monitor your application&apos;s data hygiene from a central dashboard.</p>
                         </Card>
-                        <Card className="border-border bg-card/20 shadow-none hover:bg-card/50 transition-colors p-6 rounded-2xl">
-                            <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center mb-6">
-                                <Code2 className="h-5 w-5 text-primary" />
+                        <Card className="border-border bg-card/20 shadow-none hover:bg-card/50 transition-colors p-6 rounded-lg">
+                            <div className="h-10 w-10 bg-muted rounded-lg flex items-center justify-center mb-6 text-muted-foreground">
+                                <Code2 className="h-5 w-5" />
                             </div>
                             <h3 className="font-bold text-lg mb-2">SDK Optimized</h3>
                             <p className="text-sm text-muted-foreground leading-relaxed">Lightweight responses designed for high-throughput SDKs and webhooks.</p>

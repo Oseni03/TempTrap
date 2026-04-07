@@ -100,7 +100,7 @@ export default async function DashboardPage() {
                                                 <td className="p-2 align-middle">{new Date(log.createdAt).toLocaleString()}</td>
                                                 <td className="p-2 align-middle font-mono text-xs">{log.apiKey.key.substring(0, 8)}...</td>
                                                 <td className="p-2 align-middle text-right">
-                                                    <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-500/10 text-green-500">
+                                                    <span className="inline-flex items-center rounded-lg px-2.5 py-0.5 text-xs font-medium bg-muted text-muted-foreground border">
                                                         200 OK
                                                     </span>
                                                 </td>

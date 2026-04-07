@@ -67,7 +67,7 @@ export function ProjectSwitcher() {
                             size="lg"
                             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                         >
-                            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-muted text-muted-foreground border">
                                 <Box className="size-4" />
                             </div>
                             <div className="grid flex-1 text-left text-sm leading-tight">
@@ -101,13 +101,13 @@ export function ProjectSwitcher() {
                                 </div>
                                 {org.name}
                                 {activeOrg?.id === org.id && (
-                                    <Check className="ml-auto size-4 text-primary" />
+                                    <Check className="ml-auto size-4" />
                                 )}
                             </DropdownMenuItem>
                         ))}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="gap-2 p-2" onClick={handleCreateProject}>
-                            <div className="flex size-6 items-center justify-center rounded-md border bg-background">
+                            <div className="flex size-6 items-center justify-center rounded-lg border bg-background">
                                 <Plus className="size-4" />
                             </div>
                             <div className="font-medium text-muted-foreground">Add Project</div>
