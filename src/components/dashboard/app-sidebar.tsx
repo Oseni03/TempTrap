@@ -29,13 +29,16 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ProjectSwitcher } from "@/components/dashboard/project-switcher";
 import { authClient } from "@/lib/auth-client";
 
 const NAV_ITEMS = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "API Keys", href: "/dashboard/keys", icon: Key },
-    { name: "Settings", href: "/dashboard/settings", icon: Settings },
+    { name: "Project Setttings", href: "/dashboard/settings/project", icon: Settings },
+    { name: "Members", href: "/dashboard/settings/project/members", icon: User2 },
 ];
+
 
 export function AppSidebar() {
     const pathname = usePathname();
@@ -49,12 +52,11 @@ export function AppSidebar() {
 
     return (
         <Sidebar>
-            <SidebarHeader className="border-b border-border/50 p-4">
-                <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight">
-                    <ShieldCheck className="h-6 w-6 text-primary" />
-                    <span>Temp</span>
-                </Link>
+            <SidebarHeader className="border-b border-border/50">
+
+                <ProjectSwitcher />
             </SidebarHeader>
+
 
             <SidebarContent>
                 <SidebarGroup>
