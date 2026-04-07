@@ -106,10 +106,10 @@ export default function CreateProjectPage() {
                 </p>
             </div>
 
-            <Card className="border-border bg-card shadow-none">
+            <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <Box className="h-5 w-5 text-muted-foreground" />
+                        <Box className="h-5 w-5 text-primary" />
                         Project Details
                     </CardTitle>
                     <CardDescription>

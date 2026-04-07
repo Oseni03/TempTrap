@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Syne, DM_Sans, JetBrains_Mono, Inter, Instrument_Sans } from "next/font/google";
+import { JetBrains_Mono, Inter, Instrument_Sans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { TooltipProvider } from "@/components/ui/tooltip"
 
-const instrumentSansHeading = Instrument_Sans({subsets:['latin'],variable:'--font-heading'});
+const instrumentSansHeading = Instrument_Sans({ subsets: ['latin'], variable: '--font-heading' });
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono', weight: ['400'] });
 

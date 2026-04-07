@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle
 } from "@/components/ui/card";
@@ -49,7 +48,7 @@ export function ApiKeyManager({ initialKeys }: { initialKeys: ApiKey[] }) {
             if (error) throw error;
 
             if (data) {
-                setKeys([data as any, ...keys]);
+                setKeys([data as ApiKey, ...keys]);
                 setNewKeyName("");
                 toast.success("API key generated successfully!");
             }
@@ -88,95 +87,107 @@ export function ApiKeyManager({ initialKeys }: { initialKeys: ApiKey[] }) {
     };
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-12 max-w-4xl">
             {/* Create Key Card */}
-            <Card className="border-border bg-card shadow-none">
-                <CardHeader>
-                    <CardTitle className="text-xl font-bold tracking-tight">Generate New Key</CardTitle>
-                    <CardDescription>
-                        Create a new API key to authenticate your requests.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleCreateKey} className="flex flex-col sm:flex-row gap-4 items-end">
-                        <div className="flex-1 space-y-2 w-full">
-                            <Label htmlFor="key-name">Key Name (Optional)</Label>
-                            <Input
-                                id="key-name"
-                                placeholder="e.g. Production Web App"
-                                value={newKeyName}
-                                onChange={(e) => setNewKeyName(e.target.value)}
-                                className="bg-background"
-                            />
-                        </div>
-                        <Button type="submit" disabled={isCreating} className="w-full sm:w-auto">
-                            {isCreating ? (
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            ) : (
-                                <Plus className="mr-2 h-4 w-4" />
-                            )}
-                            Generate Key
-                        </Button>
-                    </form>
-                </CardContent>
-            </Card>
+            <section className="space-y-4">
+                <div className="px-1">
+                    <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground/50">Generate Access Token</h2>
+                    <p className="text-xs text-muted-foreground font-light mt-1">Create a new bearer token to authenticate your verification requests via the API.</p>
+                </div>
+                
+                <Card className="border border-border bg-background shadow-none rounded-xl">
+                    <CardContent className="p-6">
+                        <form onSubmit={handleCreateKey} className="flex flex-col sm:flex-row gap-4 items-end">
+                            <div className="flex-1 space-y-2 w-full group">
+                                <Label htmlFor="key-name" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70 group-focus-within:text-primary transition-colors">Key Label</Label>
+                                <Input
+                                    id="key-name"
+                                    placeholder="e.g. Production Environment"
+                                    value={newKeyName}
+                                    onChange={(e) => setNewKeyName(e.target.value)}
+                                    className="h-10 bg-muted/20 border-border focus:bg-background transition-all"
+                                />
+                            </div>
+                            <Button 
+                                type="submit" 
+                                disabled={isCreating} 
+                                className="w-full sm:w-auto h-10 px-6 font-semibold bg-primary text-primary-foreground hover:opacity-90 active:scale-[0.98] transition-all"
+                            >
+                                {isCreating ? (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Plus className="mr-2 h-4 w-4" />
+                                )}
+                                Generate Token
+                            </Button>
+                        </form>
+                    </CardContent>
+                </Card>
+            </section>
 
             {/* Keys List */}
-            <div className="space-y-4">
-                <h3 className="text-lg font-semibold tracking-tight px-1">Your API Keys</h3>
+            <section className="space-y-4 pt-4 border-t border-border/50">
+                <div className="px-1 flex items-center justify-between">
+                    <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground/50">Active Tokens</h2>
+                    <span className="text-[10px] bg-muted/50 text-muted-foreground px-2 py-0.5 rounded-full font-mono uppercase border border-border/50">{keys.length} Total</span>
+                </div>
+                
                 {keys.length === 0 ? (
-                    <Card className="border-dashed border-2 border-border bg-transparent shadow-none">
-                        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                            <AlertCircle className="h-12 w-12 text-muted-foreground/20 mb-4" />
-                            <p className="text-muted-foreground">You haven&apos;t generated any API keys yet.</p>
-                        </CardContent>
-                    </Card>
+                    <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-border/50 rounded-xl bg-muted/5">
+                        <AlertCircle className="h-10 w-10 text-muted-foreground/10 mb-4 font-light" />
+                        <p className="text-xs text-muted-foreground font-light">You haven&apos;t generated any API keys yet.</p>
+                    </div>
                 ) : (
-                    <div className="grid gap-4">
+                    <div className="grid gap-3">
                         {keys.map((apiKey) => (
-                            <Card key={apiKey.id} className="border-border bg-card shadow-none overflow-hidden transition-all hover:border-primary/20">
+                            <Card key={apiKey.id} className="border border-border bg-background shadow-none rounded-xl group transition-all hover:border-primary/20">
                                 <CardContent className="p-0">
-                                    <div className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                        <div className="space-y-1 min-w-0 flex-1">
-                                            <div className="flex items-center gap-2">
-                                                <Key className="h-4 w-4 text-muted-foreground" />
-                                                <span className="font-semibold truncate">{apiKey.name || "Unnamed Key"}</span>
+                                    <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                        <div className="space-y-2 min-w-0 flex-1">
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2 rounded-lg bg-primary/5 border border-primary/10 group-hover:bg-primary/10 transition-colors">
+                                                    <Key className="h-4 w-4 text-primary opacity-60" />
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-bold tracking-tight text-foreground">{apiKey.name || "Unnamed Key"}</span>
+                                                    <p className="text-[10px] text-muted-foreground font-light flex items-center gap-1">
+                                                        Created on {new Date(apiKey.createdAt).toLocaleDateString()}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div className="flex items-center gap-2 mt-2">
-                                                <code className="bg-muted px-2 py-1 rounded text-xs font-mono break-all flex-1">
-                                                    {visibleKeys[apiKey.id] ? apiKey.key : "temp_••••••••••••••••••••••••"}
-                                                </code>
+                                            <div className="flex items-center gap-2 pt-1 group/code">
+                                                <div className="relative flex-1 group">
+                                                    <code className="block w-full bg-muted/30 px-3 py-2 rounded-lg text-xs font-mono text-muted-foreground border border-border/50 group-hover:border-primary/20 transition-all">
+                                                        {visibleKeys[apiKey.id] ? apiKey.key : "temp_••••••••••••••••••••••••"}
+                                                    </code>
+                                                </div>
+                                                <div className="flex items-center gap-1 flex-shrink-0">
+                                                    <Button
+                                                        size="icon"
+                                                        variant="ghost"
+                                                        className="h-8 w-8 text-muted-foreground/50 hover:text-primary hover:bg-primary/5"
+                                                        onClick={() => toggleVisibility(apiKey.id)}
+                                                    >
+                                                        {visibleKeys[apiKey.id] ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                                                    </Button>
+                                                    <Button
+                                                        size="icon"
+                                                        variant="ghost"
+                                                        className="h-8 w-8 text-muted-foreground/50 hover:text-primary hover:bg-primary/5"
+                                                        onClick={() => copyToClipboard(apiKey.key)}
+                                                    >
+                                                        <Copy className="h-3.5 w-3.5" />
+                                                    </Button>
+                                                    <Button
+                                                        size="icon"
+                                                        variant="ghost"
+                                                        className="h-8 w-8 text-muted-foreground/30 hover:text-destructive hover:bg-destructive/5"
+                                                        onClick={() => handleDeleteKey(apiKey.id)}
+                                                    >
+                                                        <Trash2 className="h-3.5 w-3.5" />
+                                                    </Button>
+                                                </div>
                                             </div>
-                                            <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">
-                                                Created on {new Date(apiKey.createdAt).toLocaleDateString()}
-                                            </p>
-                                        </div>
-                                        <div className="flex items-center gap-2 sm:ml-4 self-end sm:self-center">
-                                            <Button
-                                                size="icon"
-                                                variant="ghost"
-                                                onClick={() => toggleVisibility(apiKey.id)}
-                                                title={visibleKeys[apiKey.id] ? "Hide Key" : "Show Key"}
-                                            >
-                                                {visibleKeys[apiKey.id] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                            </Button>
-                                            <Button
-                                                size="icon"
-                                                variant="ghost"
-                                                onClick={() => copyToClipboard(apiKey.key)}
-                                                title="Copy Key"
-                                            >
-                                                <Copy className="h-4 w-4" />
-                                            </Button>
-                                            <Button
-                                                size="icon"
-                                                variant="ghost"
-                                                className="hover:bg-destructive/10 hover:text-destructive text-muted-foreground"
-                                                onClick={() => handleDeleteKey(apiKey.id)}
-                                                title="Delete Key"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -184,7 +195,7 @@ export function ApiKeyManager({ initialKeys }: { initialKeys: ApiKey[] }) {
                         ))}
                     </div>
                 )}
-            </div>
+            </section>
         </div>
     );
 }

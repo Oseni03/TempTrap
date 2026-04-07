@@ -51,77 +51,91 @@ export function AppSidebar() {
     };
 
     return (
-        <Sidebar>
-            <SidebarHeader className="border-b border-border/50">
-
+        <Sidebar className="border-r border-border bg-background">
+            <SidebarHeader className="h-14 border-b border-border flex items-center px-4">
                 <ProjectSwitcher />
             </SidebarHeader>
 
-
-            <SidebarContent>
+            <SidebarContent className="px-3 py-4">
                 <SidebarGroup>
-                    <SidebarGroupLabel className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
-                        General
+                    <SidebarGroupLabel className="px-3 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50">
+                        Overview
                     </SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {NAV_ITEMS.map((item) => (
-                                <SidebarMenuItem key={item.href}>
-                                    <SidebarMenuButton
-                                        asChild
-                                        isActive={pathname === item.href}
-                                        tooltip={item.name}
-                                    >
-                                        <Link href={item.href}>
-                                            <item.icon className="h-4 w-4" />
-                                            <span>{item.name}</span>
-                                        </Link>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
+                    <SidebarGroupContent className="mt-1">
+                        <SidebarMenu className="gap-1">
+                            {NAV_ITEMS.map((item) => {
+                                const isActive = pathname === item.href;
+                                return (
+                                    <SidebarMenuItem key={item.href}>
+                                        <SidebarMenuButton
+                                            asChild
+                                            isActive={isActive}
+                                            tooltip={item.name}
+                                            className={`
+                                                relative flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200
+                                                ${isActive 
+                                                    ? "bg-primary/5 text-primary font-medium" 
+                                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"}
+                                            `}
+                                        >
+                                            <Link href={item.href}>
+                                                <item.icon className={`h-4 w-4 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+                                                <span className="text-sm tracking-tight">{item.name}</span>
+                                                {isActive && (
+                                                    <div className="absolute right-2 h-1 w-1 rounded-full bg-primary" />
+                                                )}
+                                            </Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                );
+                            })}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
 
-            <SidebarFooter className="border-t border-border/50 p-4">
+            <SidebarFooter className="border-t border-border p-4 bg-muted/20">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <SidebarMenuButton className="w-full h-12 flex items-center justify-between hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors duration-150">
+                                <SidebarMenuButton className="w-full h-12 flex items-center justify-between hover:bg-background border border-transparent hover:border-border rounded-lg transition-all duration-200 px-3">
                                     <div className="flex items-center gap-3">
-                                        <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center border">
-                                            <User2 className="h-4 w-4 text-muted-foreground" />
+                                        <div className="h-8 w-8 rounded-md bg-background flex items-center justify-center border border-border">
+                                            <User2 className="h-4 w-4 text-muted-foreground font-light" />
                                         </div>
                                         <div className="flex flex-col text-left overflow-hidden">
-                                            <span className="text-sm font-semibold truncate leading-none mb-1">
+                                            <span className="text-xs font-semibold truncate text-foreground">
                                                 {session?.user?.name || "User"}
                                             </span>
-                                            <span className="text-[10px] text-muted-foreground truncate leading-none">
+                                            <span className="text-[10px] text-muted-foreground/70 truncate tracking-tight">
                                                 {session?.user?.email || "user@example.com"}
                                             </span>
                                         </div>
                                     </div>
-                                    <ChevronUp className="h-4 w-4 opacity-50" />
+                                    <ChevronUp className="h-3 w-3 text-muted-foreground/50" />
                                 </SidebarMenuButton>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
-                                side="top"
-                                className="w-[--radix-popper-anchor-width] mb-2 p-1 bg-popover/95 backdrop-blur-sm border rounded-lg z-50"
+                                side="right"
+                                align="end"
+                                className="w-56 mb-2 p-1 bg-background border border-border rounded-xl shadow-none z-50 animate-in fade-in zoom-in-95 duration-200"
                             >
+                                <div className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 border-b border-border/50 mb-1">
+                                    Account
+                                </div>
                                 <DropdownMenuItem asChild>
-                                    <Link href="/dashboard/settings" className="flex items-center gap-2 px-3 py-2 cursor-pointer rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors duration-150">
-                                        <Settings className="h-4 w-4" />
-                                        <span>Account Settings</span>
+                                    <Link href="/dashboard/settings" className="flex items-center gap-2 px-3 py-2 cursor-pointer rounded-lg hover:bg-muted transition-colors duration-150">
+                                        <Settings className="h-4 w-4 text-muted-foreground" />
+                                        <span className="text-sm">Settings</span>
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={handleSignOut}
-                                    className="flex items-center gap-2 px-3 py-2 cursor-pointer rounded-lg text-destructive hover:bg-destructive/10 transition-colors duration-150"
+                                    className="flex items-center gap-2 px-3 py-2 cursor-pointer rounded-lg text-destructive hover:bg-destructive/5 transition-colors duration-150"
                                 >
                                     <LogOut className="h-4 w-4" />
-                                    <span>Sign Out</span>
+                                    <span className="text-sm">Sign Out</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>

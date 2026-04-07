@@ -27,10 +27,10 @@ export default async function ApiKeysPage() {
     }));
 
     return (
-        <div className="space-y-6">
-            <header className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold tracking-tight">API Management</h1>
-                <p className="text-muted-foreground">
+        <div className="space-y-10 animate-in fade-in duration-500">
+            <header className="flex flex-col gap-1">
+                <h1 className="text-2xl font-bold tracking-tight text-foreground">API Management</h1>
+                <p className="text-sm text-muted-foreground font-light">
                     Manage your access tokens for the Temp verification service.
                 </p>
             </header>

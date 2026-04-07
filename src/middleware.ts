@@ -7,7 +7,7 @@ export async function middleware(request: NextRequest) {
 
 	// If no valid session exists, redirect to login with return URL
 	if (!session) {
-		const loginUrl = new URL("/login", request.url);
+		const loginUrl = new URL("/sign-in", request.url);
 		// Add the current URL as a return URL parameter
 		loginUrl.searchParams.set(
 			"callbackUrl",
