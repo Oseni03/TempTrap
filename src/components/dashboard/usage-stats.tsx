@@ -36,7 +36,7 @@ export function UsageStats({
 			].map((stat) => (
 				<Card key={stat.label} className="border border-border bg-background shadow-none rounded-xl overflow-hidden group hover:border-primary/20 transition-all duration-300">
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-6 pt-6">
-						<CardTitle className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50">
+						<CardTitle className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground">
 							{stat.label}
 						</CardTitle>
 						<stat.icon className="h-4 w-4 text-primary opacity-40 group-hover:opacity-100 transition-opacity" />

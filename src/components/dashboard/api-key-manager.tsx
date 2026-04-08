@@ -91,7 +91,7 @@ export function ApiKeyManager({ initialKeys }: { initialKeys: ApiKey[] }) {
             {/* Create Key Card */}
             <section className="space-y-4">
                 <div className="px-1">
-                    <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground/50">Generate Access Token</h2>
+                    <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-foreground">Generate Access Token</h2>
                     <p className="text-xs text-muted-foreground font-light mt-1">Create a new bearer token to authenticate your verification requests via the API.</p>
                 </div>
                 
@@ -99,7 +99,7 @@ export function ApiKeyManager({ initialKeys }: { initialKeys: ApiKey[] }) {
                     <CardContent className="p-6">
                         <form onSubmit={handleCreateKey} className="flex flex-col sm:flex-row gap-4 items-end">
                             <div className="flex-1 space-y-2 w-full group">
-                                <Label htmlFor="key-name" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70 group-focus-within:text-primary transition-colors">Key Label</Label>
+                                <Label htmlFor="key-name" className="text-[10px] font-bold uppercase tracking-wider text-foreground group-focus-within:text-primary transition-colors">Key Label</Label>
                                 <Input
                                     id="key-name"
                                     placeholder="e.g. Production Environment"
@@ -128,7 +128,7 @@ export function ApiKeyManager({ initialKeys }: { initialKeys: ApiKey[] }) {
             {/* Keys List */}
             <section className="space-y-4 pt-4 border-t border-border/50">
                 <div className="px-1 flex items-center justify-between">
-                    <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground/50">Active Tokens</h2>
+                    <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-foreground">Active Tokens</h2>
                     <span className="text-[10px] bg-muted/50 text-muted-foreground px-2 py-0.5 rounded-full font-mono uppercase border border-border/50">{keys.length} Total</span>
                 </div>
                 
@@ -165,7 +165,7 @@ export function ApiKeyManager({ initialKeys }: { initialKeys: ApiKey[] }) {
                                                     <Button
                                                         size="icon"
                                                         variant="ghost"
-                                                        className="h-8 w-8 text-muted-foreground/50 hover:text-primary hover:bg-primary/5"
+                                                        className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/5"
                                                         onClick={() => toggleVisibility(apiKey.id)}
                                                     >
                                                         {visibleKeys[apiKey.id] ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
@@ -173,7 +173,7 @@ export function ApiKeyManager({ initialKeys }: { initialKeys: ApiKey[] }) {
                                                     <Button
                                                         size="icon"
                                                         variant="ghost"
-                                                        className="h-8 w-8 text-muted-foreground/50 hover:text-primary hover:bg-primary/5"
+                                                        className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/5"
                                                         onClick={() => copyToClipboard(apiKey.key)}
                                                     >
                                                         <Copy className="h-3.5 w-3.5" />
@@ -181,7 +181,7 @@ export function ApiKeyManager({ initialKeys }: { initialKeys: ApiKey[] }) {
                                                     <Button
                                                         size="icon"
                                                         variant="ghost"
-                                                        className="h-8 w-8 text-muted-foreground/30 hover:text-destructive hover:bg-destructive/5"
+                                                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/5"
                                                         onClick={() => handleDeleteKey(apiKey.id)}
                                                     >
                                                         <Trash2 className="h-3.5 w-3.5" />

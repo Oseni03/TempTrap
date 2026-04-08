@@ -34,15 +34,15 @@ export default function LandingPage() {
                 {/* Hero Section */}
                 <section className="relative pt-24 pb-20 md:pt-32 md:pb-28 overflow-hidden">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg border border-border bg-muted/50 text-xs font-medium uppercase tracking-widest text-muted-foreground mb-8">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg border border-border bg-muted/50 text-xs font-bold uppercase tracking-widest text-foreground mb-8">
                             <Zap className="h-3 w-3" />
                             Reliable Verification API
                         </div>
                         <h1 className="text-5xl md:text-7xl font-bold tracking-tight font-heading mb-8 max-w-4xl mx-auto">
                             Stop fake signups <br />
-                            <span className="text-muted-foreground">at the threshold.</span>
+                            at the threshold.
                         </h1>
-                        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
+                        <p className="text-lg md:text-xl text-foreground font-medium max-w-2xl mx-auto mb-10 leading-relaxed">
                             A fast, developer-first API to identify and block disposable email addresses. Improve lead quality and reduce fraud instantly.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">

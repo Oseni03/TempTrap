@@ -30,7 +30,7 @@ export default function DashboardLayout({
                             <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest px-1">
                                 {pathname.split('/').filter(Boolean).slice(0, -1).join(' / ') || "App"}
                             </span>
-                            <span className="text-muted-foreground/30 font-light">/</span>
+                            <span className="text-muted-foreground font-light">/</span>
                             <h2 className="text-sm font-semibold tracking-tight text-foreground">
                                 {NAV_ITEMS.find(i => i.href === pathname)?.name || pathname.split('/').pop()?.replace(/-/g, ' ') || "Dashboard"}
                             </h2>

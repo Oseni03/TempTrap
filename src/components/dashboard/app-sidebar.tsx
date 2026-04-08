@@ -58,7 +58,7 @@ export function AppSidebar() {
 
             <SidebarContent className="px-3 py-4">
                 <SidebarGroup>
-                    <SidebarGroupLabel className="px-3 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50">
+                    <SidebarGroupLabel className="px-3 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-foreground">
                         Overview
                     </SidebarGroupLabel>
                     <SidebarGroupContent className="mt-1">
@@ -108,12 +108,12 @@ export function AppSidebar() {
                                             <span className="text-xs font-semibold truncate text-foreground">
                                                 {session?.user?.name || "User"}
                                             </span>
-                                            <span className="text-[10px] text-muted-foreground/70 truncate tracking-tight">
+                                            <span className="text-[10px] text-muted-foreground truncate tracking-tight">
                                                 {session?.user?.email || "user@example.com"}
                                             </span>
                                         </div>
                                     </div>
-                                    <ChevronUp className="h-3 w-3 text-muted-foreground/50" />
+                                    <ChevronUp className="h-3 w-3 text-muted-foreground" />
                                 </SidebarMenuButton>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
@@ -121,7 +121,7 @@ export function AppSidebar() {
                                 align="end"
                                 className="w-56 mb-2 p-1 bg-background border border-border rounded-xl shadow-none z-50 animate-in fade-in zoom-in-95 duration-200"
                             >
-                                <div className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 border-b border-border/50 mb-1">
+                                <div className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-widest text-foreground border-b border-border/50 mb-1">
                                     Account
                                 </div>
                                 <DropdownMenuItem asChild>
