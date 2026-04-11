@@ -27,7 +27,7 @@ import { useRouter } from "next/navigation";
 export function ProjectSwitcher() {
     const { isMobile } = useSidebar();
     const router = useRouter();
-    
+
     const { data: organizations, isPending } = authClient.useListOrganizations();
     const { data: activeOrg } = authClient.useActiveOrganization();
 
