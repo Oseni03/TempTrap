@@ -7,6 +7,8 @@ import {
     computeBaseScore,
     type SignalResult,
 } from "@/lib/email-tools";
+import { auth } from "@/lib/auth";
+import { redis } from "@/lib/redis";
 
 const CORS_HEADERS = {
     "Access-Control-Allow-Origin": "*",
@@ -102,14 +104,31 @@ export async function GET(req: Request) {
         }
 
         // Verify API key
-        const keyRecord = await prisma.apiKey.findFirst({
-            where: { key: apiKey },
+        const keyRecord = await auth.api.verifyApiKey({ body: {key: apiKey} })
+
+        if (!keyRecord.valid || !keyRecord.key) {
+            return NextResponse.json(
+                { error: keyRecord.error?.message || "Invalid API key" },
+                { status: 401, headers: CORS_HEADERS }
+            );
+        }
+
+        // ── Check Usage Limit ────────────────────────────────────────────────
+        const usageCount = await prisma.usageLog.count({
+            where: {
+                apiKey: {
+                    userId: keyRecord.key.userId,
+                },
+            },
         });
 
-        if (!keyRecord) {
+        if (usageCount >= 20) {
             return NextResponse.json(
-                { error: "Invalid API key" },
-                { status: 401, headers: CORS_HEADERS }
+                {
+                    error: "Usage limit reached",
+                    message: "You have reached the maximum of 20 requests for this user account.",
+                },
+                { status: 402, headers: CORS_HEADERS }
             );
         }
 
@@ -132,6 +151,25 @@ export async function GET(req: Request) {
                 { error: "Invalid format" },
                 { status: 400, headers: CORS_HEADERS }
             );
+        }
+
+        // ── Check Cache ──────────────────────────────────────────────────────
+        const cacheKey = `verify:domain:${domain}`;
+        try {
+            const cached = await redis.get(cacheKey);
+            if (cached) {
+                const result = typeof cached === "string" ? JSON.parse(cached) : cached;
+                return NextResponse.json(
+                    {
+                        ...result,
+                        email, // Keep requested email
+                        cached: true,
+                    },
+                    { headers: CORS_HEADERS }
+                );
+            }
+        } catch (e) {
+            console.error("Redis cache lookup failed", e);
         }
 
         // ── Collect signals in parallel ──────────────────────────────────────
@@ -171,34 +209,50 @@ export async function GET(req: Request) {
         }
 
         // ── Log usage ────────────────────────────────────────────────────────
+        if (keyRecord.key?.id) {
+            try {
+                await prisma.usageLog.create({
+                    data: {
+                        apiKeyId: keyRecord.key.id,
+                        endpoint: "/api/v1/verify",
+                        email,
+                        isDisposable: verdict.isTemp,
+                    },
+                });
+            } catch (e) {
+                console.error("Failed to log usage", e);
+            }
+        }
+
+        // ── Cache the result ─────────────────────────────────────────────────
+        const responseData = {
+            domain,
+            isTemp: verdict.isTemp,
+            score: verdict.score,
+            confidence: verdict.confidence,
+            explanation: verdict.explanation,
+            signals: {
+                disposable: signals.disposable,
+                mxValid: signals.mx.valid,
+                mxProviders: signals.mx.providers,
+                domainAgeDays: signals.domainAge.ageDays,
+            },
+        };
+
         try {
-            await prisma.usageLog.create({
-                data: {
-                    apiKeyId: keyRecord.id,
-                    endpoint: "/api/v1/verify",
-                    email,
-                    isDisposable: verdict.isTemp,
-                },
+            await redis.set(cacheKey, JSON.stringify(responseData), {
+                ex: 86400, // 24 hours
             });
         } catch (e) {
-            console.error("Failed to log usage", e);
+            console.error("Failed to cache result", e);
         }
 
         // ── Response ─────────────────────────────────────────────────────────
         return NextResponse.json(
             {
                 email,
-                domain,
-                isTemp: verdict.isTemp,
-                score: verdict.score,
-                confidence: verdict.confidence,
-                explanation: verdict.explanation,
-                signals: {
-                    disposable: signals.disposable,
-                    mxValid: signals.mx.valid,
-                    mxProviders: signals.mx.providers,
-                    domainAgeDays: signals.domainAge.ageDays,
-                },
+                ...responseData,
+                cached: false,
             },
             { headers: CORS_HEADERS }
         );
