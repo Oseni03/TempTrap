@@ -29,6 +29,7 @@ interface ApiKey {
 }
 
 export function ApiKeyManager({ initialKeys }: { initialKeys: ApiKey[] }) {
+    const { data: session } = authClient.useSession();
     const [keys, setKeys] = useState<ApiKey[]>(initialKeys);
     const [newKeyName, setNewKeyName] = useState("");
     const [isCreating, setIsCreating] = useState(false);
@@ -41,6 +42,8 @@ export function ApiKeyManager({ initialKeys }: { initialKeys: ApiKey[] }) {
         try {
             const { data, error } = await authClient.apiKey.create({
                 name: newKeyName || `Key ${keys.length + 1}`,
+                userId: session?.user.id,
+                organizationId: session?.session.activeOrganizationId,
             });
 
             if (error) throw error;

@@ -10,8 +10,10 @@ import {
     ChevronUp,
     User2,
     BookOpen,
-    CreditCard,
+    Sparkles,
 } from "lucide-react";
+import { useState } from "react";
+import { SurveyModal } from "@/components/dashboard/survey-modal";
 import {
     Sidebar,
     SidebarHeader,
@@ -39,7 +41,7 @@ const NAV_ITEMS = [
     { name: "API Docs", href: "/docs", icon: BookOpen },
     { name: "Settings", href: "/dashboard/settings/project", icon: Settings },
     { name: "Members", href: "/dashboard/settings/project/members", icon: User2 },
-    { name: "Billing", href: "/dashboard/settings/project/billing", icon: CreditCard },
+    { name: "Upgrade", href: "#upgrade", icon: Sparkles, isSurvey: true },
 ];
 
 
@@ -47,6 +49,8 @@ export function AppSidebar() {
     const pathname = usePathname();
     const router = useRouter();
     const { data: session } = authClient.useSession();
+
+    const [surveyOpen, setSurveyOpen] = useState(false);
 
     const handleSignOut = async () => {
         await authClient.signOut();
@@ -68,26 +72,37 @@ export function AppSidebar() {
                         <SidebarMenu className="gap-1">
                             {NAV_ITEMS.map((item) => {
                                 const isActive = pathname === item.href;
+                                const isSurvey = (item as any).isSurvey;
+                                
                                 return (
-                                    <SidebarMenuItem key={item.href}>
+                                    <SidebarMenuItem key={item.name}>
                                         <SidebarMenuButton
-                                            asChild
+                                            asChild={!isSurvey}
                                             isActive={isActive}
                                             tooltip={item.name}
+                                            onClick={isSurvey ? () => setSurveyOpen(true) : undefined}
                                             className={`
                                                 relative flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200
                                                 ${isActive
                                                     ? "bg-primary/5 text-primary font-medium"
                                                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"}
+                                                ${isSurvey ? "cursor-pointer" : ""}
                                             `}
                                         >
-                                            <Link href={item.href}>
-                                                <item.icon className={`h-4 w-4 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
-                                                <span className="text-sm tracking-tight">{item.name}</span>
-                                                {isActive && (
-                                                    <div className="absolute right-2 h-1 w-1 rounded-full bg-primary" />
-                                                )}
-                                            </Link>
+                                            {isSurvey ? (
+                                                <div className="flex items-center gap-3 w-full">
+                                                    <item.icon className="h-4 w-4 text-primary" />
+                                                    <span className="text-sm tracking-tight font-medium text-primary">{item.name}</span>
+                                                </div>
+                                            ) : (
+                                                <Link href={item.href}>
+                                                    <item.icon className={`h-4 w-4 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+                                                    <span className="text-sm tracking-tight">{item.name}</span>
+                                                    {isActive && (
+                                                        <div className="absolute right-2 h-1 w-1 rounded-full bg-primary" />
+                                                    )}
+                                                </Link>
+                                            )}
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
                                 );
@@ -145,6 +160,7 @@ export function AppSidebar() {
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarFooter>
+            <SurveyModal open={surveyOpen} onOpenChange={setSurveyOpen} />
         </Sidebar>
     );
 }

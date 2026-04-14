@@ -117,7 +117,7 @@ export async function GET(req: Request) {
         const usageCount = await prisma.usageLog.count({
             where: {
                 apiKey: {
-                    userId: keyRecord.key.userId,
+                    userId: keyRecord.key.referenceId,
                 },
             },
         });
@@ -126,7 +126,7 @@ export async function GET(req: Request) {
             return NextResponse.json(
                 {
                     error: "Usage limit reached",
-                    message: "You have reached the maximum of 20 requests for this user account.",
+                    message: "You have reached the free tier limit of 20 requests. Please contact support to increase your limits and get pro access.",
                 },
                 { status: 402, headers: CORS_HEADERS }
             );
