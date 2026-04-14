@@ -21,24 +21,14 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from "@/components/ui/sidebar";
-import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
 import { CreateProjectDialog } from "./create-project-dialog";
+import { useOrganization } from "@/contexts/organization-context";
 
 export function ProjectSwitcher() {
     const { isMobile } = useSidebar();
-    const router = useRouter();
     const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false);
 
-    const { data: organizations, isPending } = authClient.useListOrganizations();
-    const { data: activeOrg } = authClient.useActiveOrganization();
-
-    const handleSwitch = async (orgId: string) => {
-        await authClient.organization.setActive({
-            organizationId: orgId,
-        });
-        router.refresh();
-    };
+    const { organizations, activeOrganization: activeOrg, isLoadingList: isPending, setActiveOrganization } = useOrganization()
 
     const handleCreateProject = () => {
         setIsCreateDialogOpen(true);
@@ -94,7 +84,7 @@ export function ProjectSwitcher() {
                         {(organizations ?? []).map((org) => (
                             <DropdownMenuItem
                                 key={org.id}
-                                onClick={() => handleSwitch(org.id)}
+                                onClick={() => setActiveOrganization(org.id)}
                                 className="gap-2 p-2"
                             >
                                 <div className="flex size-6 items-center justify-center rounded-sm border">
@@ -116,9 +106,9 @@ export function ProjectSwitcher() {
                     </DropdownMenuContent>
                 </DropdownMenu>
             </SidebarMenuItem>
-            <CreateProjectDialog 
-                open={isCreateDialogOpen} 
-                onOpenChange={setIsCreateDialogOpen} 
+            <CreateProjectDialog
+                open={isCreateDialogOpen}
+                onOpenChange={setIsCreateDialogOpen}
             />
         </SidebarMenu>
     );

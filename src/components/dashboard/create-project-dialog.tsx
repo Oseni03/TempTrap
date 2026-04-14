@@ -24,8 +24,8 @@ import {
     FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { authClient } from "@/lib/auth-client";
 import { Box, Loader2 } from "lucide-react";
+import { useOrganization } from "@/contexts/organization-context";
 
 const projectSchema = z.object({
     name: z
@@ -46,6 +46,7 @@ interface CreateProjectDialogProps {
 
 export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogProps) {
     const router = useRouter();
+    const { createOrganization, setActiveOrganization } = useOrganization()
     const [isLoading, setIsLoading] = React.useState(false);
 
     const form = useForm<z.infer<typeof projectSchema>>({
@@ -65,9 +66,10 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
     async function onSubmit(data: z.infer<typeof projectSchema>) {
         setIsLoading(true);
         try {
-            const { data: organization, error } = await authClient.organization.create({
+            const { data: organization, error } = await createOrganization({
                 name: data.name,
                 slug: data.slug,
+                createdAt: new Date()
             });
 
             if (error) {
@@ -78,9 +80,7 @@ export function CreateProjectDialog({ open, onOpenChange }: CreateProjectDialogP
             if (organization) {
                 toast.success("Project created successfully");
                 // Set the new organization as active
-                await authClient.organization.setActive({
-                    organizationId: organization.id,
-                });
+                await setActiveOrganization(organization.id);
                 onOpenChange(false);
                 router.refresh();
             }

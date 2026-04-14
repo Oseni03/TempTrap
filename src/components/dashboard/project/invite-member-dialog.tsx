@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { authClient } from "@/lib/auth-client";
 import {
     Dialog,
     DialogContent,
@@ -23,8 +22,11 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Loader2, Plus } from "lucide-react";
+import { useOrganization } from "@/contexts/organization-context";
 
 export function InviteMemberDialog() {
+    const { inviteMember } = useOrganization()
+
     const [email, setEmail] = useState("");
     const [role, setRole] = useState("member");
     const [isLoading, setIsLoading] = useState(false);
@@ -34,10 +36,10 @@ export function InviteMemberDialog() {
         if (!email) return;
         setIsLoading(true);
         try {
-            await authClient.organization.inviteMember({
+            await inviteMember(
                 email,
-                role: role as "admin" | "member",
-            });
+                role as "admin" | "member" | undefined
+            );
             toast.success("Invitation sent successfully");
             setIsOpen(false);
             setEmail("");

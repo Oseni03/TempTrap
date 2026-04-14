@@ -13,10 +13,10 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { authClient } from "@/lib/auth-client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useOrganization } from "@/contexts/organization-context";
 
 const projectSchema = z.object({
     name: z.string().min(2, {
@@ -25,7 +25,7 @@ const projectSchema = z.object({
 });
 
 export default function ProjectSettingsPage() {
-    const { data: activeOrg, isPending } = authClient.useActiveOrganization();
+    const { activeOrganization: activeOrg, isLoadingActive: isPending, updateOrganization } = useOrganization();
     const router = useRouter();
 
     const form = useForm<z.infer<typeof projectSchema>>({
@@ -39,11 +39,9 @@ export default function ProjectSettingsPage() {
         if (!activeOrg) return;
 
         try {
-            await authClient.organization.update({
-                data: {
-                    name: values.name,
-                },
-            });
+            await updateOrganization({
+                name: values.name,
+            },);
             toast.success("Project updated successfully");
             router.refresh();
         } catch (_error) {

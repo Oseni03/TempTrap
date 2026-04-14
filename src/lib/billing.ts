@@ -20,12 +20,12 @@ export async function checkOrganizationProAccess(organizationId: string): Promis
             limit: 100, 
         });
 
-        if (!response.items) {
+        if (!response.result.items) {
             return false;
         }
 
         // Check if any active subscription has the referenceId equal to our organizationId
-        const hasSub = response.items.some(sub => 
+        const hasSub = response.result.items.some(sub => 
             sub.metadata && sub.metadata.referenceId === organizationId
         );
 

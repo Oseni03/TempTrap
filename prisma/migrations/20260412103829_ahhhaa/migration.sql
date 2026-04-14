@@ -21,6 +21,7 @@ CREATE TABLE "session" (
     "ipAddress" TEXT,
     "userAgent" TEXT,
     "userId" TEXT NOT NULL,
+    "activeOrganizationId" TEXT,
 
     CONSTRAINT "session_pkey" PRIMARY KEY ("id")
 );
@@ -57,6 +58,42 @@ CREATE TABLE "verification" (
 );
 
 -- CreateTable
+CREATE TABLE "organization" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "slug" TEXT,
+    "logo" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL,
+    "metadata" TEXT,
+
+    CONSTRAINT "organization_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "member" (
+    "id" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "role" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "member_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "invitation" (
+    "id" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "role" TEXT,
+    "status" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "inviterId" TEXT NOT NULL,
+
+    CONSTRAINT "invitation_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "api_key" (
     "id" TEXT NOT NULL,
     "key" TEXT NOT NULL,
@@ -89,6 +126,9 @@ CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
 CREATE UNIQUE INDEX "session_token_key" ON "session"("token");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "organization_slug_key" ON "organization"("slug");
+
+-- CreateIndex
 CREATE INDEX "UsageLog_apiKeyId_idx" ON "UsageLog"("apiKeyId");
 
 -- AddForeignKey
@@ -96,6 +136,18 @@ ALTER TABLE "session" ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId"
 
 -- AddForeignKey
 ALTER TABLE "account" ADD CONSTRAINT "account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "member" ADD CONSTRAINT "member_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "member" ADD CONSTRAINT "member_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "invitation" ADD CONSTRAINT "invitation_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "invitation" ADD CONSTRAINT "invitation_inviterId_fkey" FOREIGN KEY ("inviterId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "api_key" ADD CONSTRAINT "api_key_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;

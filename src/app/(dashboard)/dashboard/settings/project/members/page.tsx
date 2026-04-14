@@ -2,12 +2,12 @@
 
 import { MembersTable } from "@/components/dashboard/project/members-table";
 import { InviteMemberDialog } from "@/components/dashboard/project/invite-member-dialog";
-import { authClient } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useOrganization } from "@/contexts/organization-context";
 
 export default function MembersSettingsPage() {
-    const { data: activeOrg, isPending } = authClient.useActiveOrganization();
+    const { activeOrganization: activeOrg, isLoadingActive: isPending } = useOrganization()
     const router = useRouter();
 
     if (isPending) {
@@ -24,7 +24,7 @@ export default function MembersSettingsPage() {
                 <p className="text-muted-foreground text-center max-w-md">
                     No active project found. Please select or create a project first.
                 </p>
-                <button 
+                <button
                     type="button"
                     onClick={() => router.push("/dashboard")}
                     className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2"
@@ -46,7 +46,7 @@ export default function MembersSettingsPage() {
                 </div>
                 <InviteMemberDialog />
             </div>
-            
+
             <MembersTable />
         </div>
     );

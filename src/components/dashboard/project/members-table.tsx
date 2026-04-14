@@ -19,20 +19,23 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Shield, User, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { useOrganization } from "@/contexts/organization-context";
+import { useRouter } from "next/navigation";
 
 export function MembersTable() {
-    const { data: activeOrg, isPending, refetch } = authClient.useActiveOrganization();
+    const { activeOrganization: activeOrg, isLoadingActive: isPending, updateMemberRole, removeMember } = useOrganization()
     const members = activeOrg?.members;
     const { data: session } = authClient.useSession();
+    const router = useRouter()
 
     const handleUpdateRole = async (memberId: string, role: string) => {
         try {
-            await authClient.organization.updateMemberRole({
+            await updateMemberRole(
                 memberId,
-                role: role as "admin" | "member",
-            });
+                role as "admin" | "member",
+            );
             toast.success(`Role updated to ${role}`);
-            refetch();
+            router.refresh();
         } catch (_error) {
             toast.error("Failed to update role");
         }
@@ -40,11 +43,9 @@ export function MembersTable() {
 
     const handleRemoveMember = async (memberId: string) => {
         try {
-            await authClient.organization.removeMember({
-                memberIdOrEmail: memberId,
-            });
+            await removeMember(memberId);
             toast.success("Member removed");
-            refetch();
+            router.refresh();
         } catch (_error) {
             toast.error("Failed to remove member");
         }

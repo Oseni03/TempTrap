@@ -21,22 +21,20 @@ export default function SignUpPage() {
     const handleSignUp = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        await authClient.signUp.email({
+        const { data, error } = await authClient.signUp.email({
             email,
             password,
             name,
-            callbackURL: "/dashboard",
-        }, {
-            onRequest: () => setLoading(true),
-            onResponse: () => setLoading(false),
-            onSuccess: () => {
-                toast.success("Account created successfully!");
-                router.push("/dashboard");
-            },
-            onError: (ctx) => {
-                toast.error(ctx.error.message);
-            },
+            callbackURL: "/dashboard"
         });
+        if (error) {
+            toast.error(error.message || "Invalid login credentials")
+            setLoading(false)
+        } else {
+            toast.success("Account created successfully!");
+            setLoading(false)
+            if (data.user) router.push("/dashboard")
+        }
     };
 
     return (

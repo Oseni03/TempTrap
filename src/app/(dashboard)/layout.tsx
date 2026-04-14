@@ -4,6 +4,9 @@ import { usePathname } from "next/navigation";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { Separator } from "@/components/ui/separator";
+import { authClient } from "@/lib/auth-client";
+import { useEffect } from "react";
+import { useOrganization } from "@/contexts/organization-context";
 
 const NAV_ITEMS = [
     { name: "Dashboard", href: "/dashboard" },
@@ -17,6 +20,22 @@ export default function DashboardLayout({
     children: React.ReactNode;
 }) {
     const pathname = usePathname();
+    const { data } = authClient.useSession()
+    const { setActiveOrganization, getFullOrganization, activeOrganization } = useOrganization()
+
+    useEffect(() => {
+        const fetchActiveOrg = async () => {
+            if (!activeOrganization && data?.user.id) {
+                const { data: activeOrg } = await getFullOrganization(data?.user.id, {})
+                await setActiveOrganization(activeOrg.id)
+            }
+
+        }
+
+        fetchActiveOrg()
+    }, [data?.user])
+
+    if (!data?.user.id) return null
 
     return (
         <SidebarProvider>

@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import { JetBrains_Mono, Inter, Instrument_Sans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { OrganizationProvider } from "@/contexts/organization-context";
 
 const instrumentSansHeading = Instrument_Sans({ subsets: ['latin'], variable: '--font-heading' });
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono', weight: ['400'] });
 
 export const metadata: Metadata = {
@@ -24,7 +26,12 @@ export default function RootLayout({
             className={cn("h-full", "antialiased", "font-sans", instrumentSansHeading.variable, inter.variable, jetbrainsMono.variable)}
         >
             <body className="min-h-full flex flex-col">
-                <TooltipProvider>{children}</TooltipProvider>
+                <TooltipProvider>
+                    <OrganizationProvider>
+                        {children}
+                    </OrganizationProvider>
+                    <Toaster />
+                </TooltipProvider>
             </body>
         </html>
     );

@@ -5,6 +5,8 @@ import { organization } from "better-auth/plugins";
 import { polar, checkout, portal, usage, webhooks } from "@polar-sh/better-auth";
 import { Polar } from "@polar-sh/sdk";
 import { prisma } from "@/lib/db";
+import { nextCookies } from "better-auth/next-js";
+import { createOrganization } from "@/server/organizations";
 
 const polarClient = new Polar({
     accessToken: process.env.POLAR_ACCESS_TOKEN || "test",
@@ -18,41 +20,28 @@ export const auth = betterAuth({
     emailAndPassword: {
         enabled: true
     },
+    databaseHooks: {
+        user: {
+            create: {
+                after: async (user) => {
+                    await createOrganization(user.id, {
+                        name: "Personal Project", 
+                        slug: `project-${Math.random().toString(36).substring(2, 10)}`
+                    })
+                },
+            },
+        },
+    },
     plugins: [
         apiKey(),
-        organization({
-            async organizationLimit(user) {
-                if (!user) return true;
-                try {
-                    const customers = await polarClient.customers.list({
-                        externalId: user.id
-                    });
-                    const customer = customers.items?.[0];
-                    if (!customer) return true;
-
-                    const subs = await polarClient.subscriptions.list({
-                        customerId: customer.id,
-                        active: true,
-                        limit: 1
-                    });
-                    
-                    if (subs.items && subs.items.length > 0) {
-                        return false; // Pro plan allows up to 10 project organizations
-                    }
-                    return true; // Free plan allows 1 project organization only
-                } catch (error) {
-                    console.error("[Auth] Failed to check organization limit from Polar:", error);
-                    return true;
-                }
-            }
-        }),
+        organization(),
         polar({
             client: polarClient,
-            createCustomerOnSignUp: true,
+            createCustomerOnSignUp: false,
             use: [
                 checkout({
                     products: [
-                        { slug: "pro" }
+                        { slug: "pro", productId: process.env.POLAR_PRO_PRODUCT_ID || "prod_T9111342125217" }
                     ],
                     successUrl: "/dashboard/settings/project/billing?checkout_id={CHECKOUT_ID}",
                     authenticatedUsersOnly: true
@@ -60,27 +49,11 @@ export const auth = betterAuth({
                 portal(),
                 usage(),
                 webhooks({
-                    secret: process.env.POLAR_WEBHOOK_SECRET,
+                    secret: process.env.POLAR_WEBHOOK_SECRET!,
                 })
             ],
         }),
+        nextCookies(),
     ],
-    databaseHooks: {
-        user: {
-            create: {
-                after: async (user) => {
-                    await auth.api.createOrganization({
-                        headers: new Headers(),
-                        body: {
-                            name: "Personal Project",
-                            userId: user.id,
-                            slug: `project-${Math.random().toString(36).substring(2, 10)}`,
-                            keepCurrentActiveOrganization: true
-                        },
-                    });
-                },
-            },
-        },
-    },
 });
 
