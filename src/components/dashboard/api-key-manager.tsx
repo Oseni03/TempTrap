@@ -43,7 +43,7 @@ export function ApiKeyManager({ initialKeys }: { initialKeys: ApiKey[] }) {
             const { data, error } = await authClient.apiKey.create({
                 name: newKeyName || `Key ${keys.length + 1}`,
                 userId: session?.user.id,
-                organizationId: session?.session.activeOrganizationId,
+                // organizationId: session?.session.activeOrganizationId,
             });
 
             if (error) throw error;

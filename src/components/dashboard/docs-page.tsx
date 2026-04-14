@@ -34,6 +34,16 @@ interface VerifyResult {
     email: string;
     isDisposable: boolean;
     domain: string;
+    score: number;
+    confidence: "low" | "medium" | "high";
+    explanation: string;
+    signals: {
+        disposable: boolean;
+        mxValid: boolean;
+        mxProviders: string[];
+        domainAgeDays: number | null;
+    };
+    cached: boolean;
     error?: string;
 }
 
@@ -95,7 +105,17 @@ if data["isDisposable"]:
 const SUCCESS_RESPONSE = `{
   "email": "user@mailinator.com",
   "isDisposable": true,
-  "domain": "mailinator.com"
+  "domain": "mailinator.com",
+  "score": 95,
+  "confidence": "high",
+  "explanation": "Known disposable provider with very recent domain registration.",
+  "signals": {
+    "disposable": true,
+    "mxValid": true,
+    "mxProviders": ["mx.mailinator.com"],
+    "domainAgeDays": 12
+  },
+  "cached": false
 }`;
 
 const ERROR_REFERENCE = [
@@ -103,7 +123,8 @@ const ERROR_REFERENCE = [
     { status: 400, message: "Invalid format", cause: "Submitted value resolved to an empty or unparseable domain", fix: "Check the input format" },
     { status: 401, message: "Missing x-api-key header", cause: "The x-api-key header was omitted", fix: "Add the x-api-key header" },
     { status: 401, message: "Invalid API Key", cause: "The key does not match any active key", fix: "Verify or regenerate your key in the dashboard" },
-    { status: 500, message: "Internal server error (render failure)", cause: "Unexpected server-side error", fix: "Retry the request; contact support if it persists" },
+    { status: 402, message: "Usage limit reached", cause: "Free tier limit of 20 requests exceeded", fix: "Contact support for a limit increase" },
+    { status: 500, message: "Internal server error", cause: "Unexpected server-side error", fix: "Retry the request; contact support if it persists" },
 ];
 
 // ─── Sub-components ─────────────────────────────────────────────────────────
@@ -209,7 +230,17 @@ function Playground() {
             const data = await res.json() as VerifyResult;
             setResult(data);
         } catch {
-            setResult({ email, isDisposable: false, domain: "", error: "Network error — check your connection." });
+            setResult({
+                email,
+                isDisposable: false,
+                domain: "",
+                score: 0,
+                confidence: "low",
+                explanation: "",
+                signals: { disposable: false, mxValid: false, mxProviders: [], domainAgeDays: null },
+                cached: false,
+                error: "Network error — check your connection."
+            });
         } finally {
             setLoading(false);
         }
@@ -289,7 +320,14 @@ function Playground() {
                                                 <p className={cn("text-sm font-semibold", result.isDisposable ? "text-destructive" : "text-green-600 dark:text-green-400")}>
                                                     {result.isDisposable ? "Disposable email detected" : "Legitimate email address"}
                                                 </p>
-                                                <p className="text-xs text-muted-foreground mt-0.5">Domain: {result.domain}</p>
+                                                <div className="flex items-center gap-2 mt-0.5">
+                                                    <p className="text-xs text-muted-foreground">Score: {result.score}%</p>
+                                                    <span className="text-xs text-muted-foreground/30">•</span>
+                                                    <p className="text-xs text-muted-foreground">Confidence: {result.confidence}</p>
+                                                </div>
+                                                <p className="text-xs text-muted-foreground mt-1 italic border-l-2 border-muted pl-2 py-0.5">
+                                                    "{result.explanation}"
+                                                </p>
                                             </div>
                                         </div>
                                     )}
@@ -563,9 +601,14 @@ export function DocsPage() {
                             </thead>
                             <tbody className="divide-y divide-border">
                                 {[
-                                    { field: "email", type: "string", description: "The exact value submitted in the request (email or url param)" },
-                                    { field: "isDisposable", type: "boolean", description: "true if the domain is a known disposable provider, false otherwise" },
-                                    { field: "domain", type: "string", description: "The extracted domain used for the check (always lowercased)" },
+                                    { field: "email", type: "string", description: "The exact value submitted in the request" },
+                                    { field: "isDisposable", type: "boolean", description: "true if the domain is a known disposable provider" },
+                                    { field: "domain", type: "string", description: "The extracted domain used for the check" },
+                                    { field: "score", type: "number", description: "0-100 score where higher means more likely disposable" },
+                                    { field: "confidence", type: "enum", description: "'low', 'medium', or 'high' confidence in the verdict" },
+                                    { field: "explanation", type: "string", description: "Human-readable explanation of the AI's reasoning" },
+                                    { field: "signals", type: "object", description: "Underlying risk signals used for the analysis" },
+                                    { field: "cached", type: "boolean", description: "True if the result was served from our 24h cache" },
                                 ].map((row) => (
                                     <tr key={row.field} className="hover:bg-muted/20 transition-colors">
                                         <td className="px-4 py-3"><InlineCode>{row.field}</InlineCode></td>

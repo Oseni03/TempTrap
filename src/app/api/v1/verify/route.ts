@@ -98,7 +98,7 @@ export async function GET(req: Request) {
 
         if (!email) {
             return NextResponse.json(
-                { error: "Missing email or url parameter" },
+                { error: "Missing URL or email parameter" },
                 { status: 400, headers: CORS_HEADERS }
             );
         }
@@ -108,7 +108,7 @@ export async function GET(req: Request) {
 
         if (!keyRecord.valid || !keyRecord.key) {
             return NextResponse.json(
-                { error: keyRecord.error?.message || "Invalid API key" },
+                { error: "Invalid API Key" },
                 { status: 401, headers: CORS_HEADERS }
             );
         }
@@ -227,7 +227,7 @@ export async function GET(req: Request) {
         // ── Cache the result ─────────────────────────────────────────────────
         const responseData = {
             domain,
-            isTemp: verdict.isTemp,
+            isDisposable: verdict.isTemp,
             score: verdict.score,
             confidence: verdict.confidence,
             explanation: verdict.explanation,
