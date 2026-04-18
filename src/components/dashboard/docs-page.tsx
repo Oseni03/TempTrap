@@ -33,15 +33,31 @@ interface CopyButtonProps {
 interface VerifyResult {
     email: string;
     isDisposable: boolean;
+    isTemp: boolean; // legacy alias
     domain: string;
     score: number;
     confidence: "low" | "medium" | "high";
     explanation: string;
     signals: {
-        disposable: boolean;
+        // Blocklist
+        inDisposableList: boolean;
+        // MX
         mxValid: boolean;
         mxProviders: string[];
+        mxCatchAll: boolean | null;
+        // SMTP
+        smtpMailboxExists: boolean | null;
+        smtpCatchAll: boolean | null;
+        smtpError: string | null;
+        // Domain age
         domainAgeDays: number | null;
+        domainRegistrar: string | null;
+        isNewDomain: boolean;
+        // Heuristics
+        randomLookingLocalPart: boolean;
+        numericHeavyUsername: boolean;
+        suspiciousSubdomain: boolean;
+        heuristicScore: number;
     };
     cached: boolean;
     error?: string;
@@ -60,11 +76,11 @@ const NAV_SECTIONS: NavSection[] = [
     { id: "playground", label: "Try It", icon: Play },
 ];
 
-const CURL_EXAMPLE = `curl -X GET "https://api.temp.sh/v1/verify?email=user@mailinator.com" \\
+const CURL_EXAMPLE = `curl -X GET "${process.env.NEXT_PUBLIC_APP_URL}/api/v1/verify?email=user@mailinator.com" \\
   -H "x-api-key: YOUR_API_KEY"`;
 
 const TS_EXAMPLE = `const response = await fetch(
-  "https://api.temp.sh/v1/verify?email=user@mailinator.com",
+  "${process.env.NEXT_PUBLIC_APP_URL}/api/v1/verify?email=user@mailinator.com",
   {
     method: "GET",
     headers: {
@@ -90,7 +106,7 @@ import os
 api_key = os.environ["TEMP_API_KEY"]
 
 response = requests.get(
-    "https://api.temp.sh/v1/verify",
+    "${process.env.NEXT_PUBLIC_APP_URL}/api/v1/verify",
     params={"email": "user@mailinator.com"},
     headers={"x-api-key": api_key},
 )
@@ -105,15 +121,54 @@ if data["isDisposable"]:
 const SUCCESS_RESPONSE = `{
   "email": "user@mailinator.com",
   "isDisposable": true,
+  "isTemp": true,
   "domain": "mailinator.com",
-  "score": 95,
+  "score": 91,
   "confidence": "high",
-  "explanation": "Known disposable provider with very recent domain registration.",
+  "explanation": "Known disposable provider. SMTP verification confirmed catch-all policy.",
   "signals": {
-    "disposable": true,
+    "inDisposableList": true,
     "mxValid": true,
     "mxProviders": ["mx.mailinator.com"],
-    "domainAgeDays": 12
+    "mxCatchAll": true,
+    "smtpMailboxExists": true,
+    "smtpCatchAll": true,
+    "smtpError": null,
+    "domainAgeDays": 4621,
+    "domainRegistrar": "NameCheap, Inc.",
+    "isNewDomain": false,
+    "randomLookingLocalPart": false,
+    "numericHeavyUsername": false,
+    "suspiciousSubdomain": false,
+    "heuristicScore": 0
+  },
+  "cached": false
+}
+
+// Example with random-looking local part on a new domain:
+{
+  "email": "xk92jd@tempinbox.co",
+  "isDisposable": true,
+  "isTemp": true,
+  "domain": "tempinbox.co",
+  "score": 88,
+  "confidence": "high",
+  "explanation": "New domain (18 days old) with random-looking address and no known MX provider.",
+  "signals": {
+    "inDisposableList": false,
+    "mxValid": true,
+    "mxProviders": ["mail.tempinbox.co"],
+    "mxCatchAll": null,
+    "smtpMailboxExists": null,
+    "smtpCatchAll": null,
+    "smtpError": "timeout",
+    "domainAgeDays": 18,
+    "domainRegistrar": "Unknown",
+    "isNewDomain": true,
+    "randomLookingLocalPart": true,
+    "numericHeavyUsername": false,
+    "suspiciousSubdomain": false,
+    "heuristicScore": 20
   },
   "cached": false
 }`;
@@ -153,7 +208,7 @@ function CodeBlock({ code, language = "bash" }: { code: string; language?: strin
     return (
         <div className="relative group">
             <div className="bg-[#0c0c0c] border border-border rounded-lg overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-2 border-b border-white/5 bg-white/[0.02]">
+                <div className="flex items-center justify-between px-4 py-2 border-b border-white/5 bg-white/2">
                     <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">{language}</span>
                 </div>
                 <pre className="p-4 overflow-x-auto text-sm leading-relaxed">
@@ -233,11 +288,27 @@ function Playground() {
             setResult({
                 email,
                 isDisposable: false,
+                isTemp: false,
                 domain: "",
                 score: 0,
                 confidence: "low",
                 explanation: "",
-                signals: { disposable: false, mxValid: false, mxProviders: [], domainAgeDays: null },
+                signals: {
+                    inDisposableList: false,
+                    mxValid: false,
+                    mxProviders: [],
+                    mxCatchAll: null,
+                    smtpMailboxExists: null,
+                    smtpCatchAll: null,
+                    smtpError: null,
+                    domainAgeDays: null,
+                    domainRegistrar: null,
+                    isNewDomain: false,
+                    randomLookingLocalPart: false,
+                    numericHeavyUsername: false,
+                    suspiciousSubdomain: false,
+                    heuristicScore: 0,
+                },
                 cached: false,
                 error: "Network error — check your connection."
             });
@@ -440,7 +511,7 @@ export function DocsPage() {
                         ))}
                     </div>
 
-                    <CodeBlock code={`GET https://api.temp.sh/v1/verify?email=user@mailinator.com`} language="endpoint" />
+                    <CodeBlock code={`GET ${process.env.NEXT_PUBLIC_APP_URL}/api/v1/verify?email=user@mailinator.com`} language="endpoint" />
                 </section>
 
                 {/* ── Authentication ─────────────────────────────────── */}
@@ -499,7 +570,7 @@ export function DocsPage() {
                     <div className="rounded-xl border border-border bg-muted/10 p-5 font-mono text-sm space-y-1">
                         <div className="flex items-center gap-3 flex-wrap">
                             <MethodBadge />
-                            <span className="text-foreground">https://api.temp.sh/v1/verify</span>
+                            <span className="text-foreground">{`${process.env.NEXT_PUBLIC_APP_URL}/api/v1/verify`}</span>
                         </div>
                     </div>
 
@@ -602,13 +673,27 @@ export function DocsPage() {
                             <tbody className="divide-y divide-border">
                                 {[
                                     { field: "email", type: "string", description: "The exact value submitted in the request" },
-                                    { field: "isDisposable", type: "boolean", description: "true if the domain is a known disposable provider" },
+                                    { field: "isDisposable", type: "boolean", description: "true if the AI+heuristics verdict classifies this as disposable" },
+                                    { field: "isTemp", type: "boolean", description: "Legacy alias for isDisposable — kept for backwards compatibility" },
                                     { field: "domain", type: "string", description: "The extracted domain used for the check" },
-                                    { field: "score", type: "number", description: "0-100 score where higher means more likely disposable" },
-                                    { field: "confidence", type: "enum", description: "'low', 'medium', or 'high' confidence in the verdict" },
-                                    { field: "explanation", type: "string", description: "Human-readable explanation of the AI's reasoning" },
-                                    { field: "signals", type: "object", description: "Underlying risk signals used for the analysis" },
-                                    { field: "cached", type: "boolean", description: "True if the result was served from our 24h cache" },
+                                    { field: "score", type: "number", description: "0–100 risk score — higher means more likely disposable" },
+                                    { field: "confidence", type: "enum", description: "'low', 'medium', or 'high' — how many signals contributed to the verdict" },
+                                    { field: "explanation", type: "string", description: "One-sentence AI reasoning in plain English" },
+                                    { field: "signals.inDisposableList", type: "boolean", description: "Domain matched the disposable-email-domains blocklist" },
+                                    { field: "signals.mxValid", type: "boolean", description: "Domain has at least one valid MX record" },
+                                    { field: "signals.mxProviders", type: "string[]", description: "MX hostnames returned by DNS" },
+                                    { field: "signals.mxCatchAll", type: "boolean?", description: "Whether the domain accepts any address (catch-all)" },
+                                    { field: "signals.smtpMailboxExists", type: "boolean?", description: "RCPT TO accepted (null = SMTP blocked/timeout)" },
+                                    { field: "signals.smtpCatchAll", type: "boolean?", description: "Random probe also accepted — confirms catch-all" },
+                                    { field: "signals.smtpError", type: "string?", description: "SMTP connection error message, if any" },
+                                    { field: "signals.domainAgeDays", type: "number?", description: "Days since domain registration via RDAP" },
+                                    { field: "signals.domainRegistrar", type: "string?", description: "Domain registrar name from RDAP" },
+                                    { field: "signals.isNewDomain", type: "boolean", description: "true if domain age < 90 days" },
+                                    { field: "signals.randomLookingLocalPart", type: "boolean", description: "Heuristic: high-entropy or consonant-only local part" },
+                                    { field: "signals.numericHeavyUsername", type: "boolean", description: "Heuristic: >50% digits in the local part" },
+                                    { field: "signals.suspiciousSubdomain", type: "boolean", description: "Heuristic: uses a known temp-mail subdomain pattern" },
+                                    { field: "signals.heuristicScore", type: "number", description: "0–40 additive penalty from pattern analysis" },
+                                    { field: "cached", type: "boolean", description: "Result was served from 24h domain-level cache" },
                                 ].map((row) => (
                                     <tr key={row.field} className="hover:bg-muted/20 transition-colors">
                                         <td className="px-4 py-3"><InlineCode>{row.field}</InlineCode></td>
@@ -692,7 +777,7 @@ export async function POST(req: Request) {
 
   // Verify before creating the account
   const check = await fetch(
-    \`https://api.temp.sh/v1/verify?email=\${encodeURIComponent(email)}\`,
+    \`${process.env.NEXT_PUBLIC_APP_URL}/api/v1/verify?email=\${encodeURIComponent(email)}\`,
     { headers: { "x-api-key": process.env.TEMP_API_KEY! } }
   );
   const { isDisposable } = await check.json();
