@@ -12,28 +12,10 @@ import {
     History,
     ArrowRight
 } from "lucide-react";
-import { prisma } from "@/lib/db";
 import { UsageStats } from "@/components/dashboard/usage-stats";
 import { VerificationCharts } from "@/components/dashboard/verification-charts";
 import Link from "next/link";
-import { getDashboardData } from "@/server/dashboard";
-
-async function getRecentActivity(organizationId: string) {
-    const recentActivity = await prisma.usageLog.findMany({
-        where: {
-            apiKey: {
-                referenceId: organizationId
-            }
-        },
-        take: 5,
-        orderBy: { createdAt: "desc" },
-        include: {
-            apiKey: true
-        }
-    });
-
-    return { recentActivity };
-}
+import { getDashboardData, getRecentActivity } from "@/server/dashboard";
 
 export default async function DashboardPage() {
     const session = await auth.api.getSession({
@@ -46,7 +28,7 @@ export default async function DashboardPage() {
 
     const [{ recentActivity }, dashboardData] = await Promise.all([
         getRecentActivity(session.session.activeOrganizationId),
-        getDashboardData(),
+        getDashboardData(session.session.activeOrganizationId),
     ]);
 
     return (

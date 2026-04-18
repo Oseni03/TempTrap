@@ -66,12 +66,12 @@ export async function GET(req: Request) {
             },
         });
 
-        if (usageCount >= 20) {
+        if (usageCount >= 500) {
             return NextResponse.json(
                 {
                     error: "Usage limit reached",
                     message:
-                        "You have reached the free tier limit of 20 requests. Please contact support to increase your limits and get pro access.",
+                        "You have reached the free tier limit of 500 requests. Please contact support to increase your limits and get pro access.",
                 },
                 { status: 402, headers: CORS_HEADERS },
             );

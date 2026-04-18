@@ -178,7 +178,7 @@ const ERROR_REFERENCE = [
     { status: 400, message: "Invalid format", cause: "Submitted value resolved to an empty or unparseable domain", fix: "Check the input format" },
     { status: 401, message: "Missing x-api-key header", cause: "The x-api-key header was omitted", fix: "Add the x-api-key header" },
     { status: 401, message: "Invalid API Key", cause: "The key does not match any active key", fix: "Verify or regenerate your key in the dashboard" },
-    { status: 402, message: "Usage limit reached", cause: "Free tier limit of 20 requests exceeded", fix: "Contact support for a limit increase" },
+    { status: 402, message: "Usage limit reached", cause: "Free tier limit of 500 requests exceeded", fix: "Contact support for a limit increase" },
     { status: 500, message: "Internal server error", cause: "Unexpected server-side error", fix: "Retry the request; contact support if it persists" },
 ];
 

@@ -1,21 +1,9 @@
 "use server";
 
 import { prisma } from "@/lib/db";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import { subDays, startOfDay, endOfDay, format } from "date-fns";
 
-export async function getDashboardData() {
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
-
-    if (!session?.user) {
-        throw new Error("Unauthorized");
-    }
-
-    const userId = session.user.id;
-
+export async function getDashboardData(organizationId: string) {
     // 1. Fetch all usage logs for the last 30 days to calculate metrics in memory
     // (Given the low volume of checks for free tier, this is efficient)
     const now = new Date();
@@ -25,7 +13,7 @@ export async function getDashboardData() {
     const logs = await prisma.usageLog.findMany({
         where: {
             apiKey: {
-                userId,
+                referenceId: organizationId,
             },
             createdAt: {
                 gte: sixtyDaysAgo,
@@ -101,4 +89,21 @@ export async function getDashboardData() {
         chartData: last7Days,
         distribution,
     };
+}
+
+export async function getRecentActivity(organizationId: string) {
+    const recentActivity = await prisma.usageLog.findMany({
+        where: {
+            apiKey: {
+                referenceId: organizationId,
+            },
+        },
+        take: 5,
+        orderBy: { createdAt: "desc" },
+        include: {
+            apiKey: true,
+        },
+    });
+
+    return { recentActivity };
 }
