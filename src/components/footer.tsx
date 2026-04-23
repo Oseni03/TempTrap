@@ -36,9 +36,9 @@ export function Footer() {
 							{
 								title: "Product",
 								links: [
-									{ label: "Features", href: "#" },
+									{ label: "Features", href: "#features" },
 									{ label: "API Docs", href: "/docs" },
-									{ label: "Pricing", href: "#" },
+									{ label: "Pricing", href: "#pricing" },
 								],
 							},
 							{
@@ -47,14 +47,6 @@ export function Footer() {
 									{ label: "About", href: "/about" },
 									{ label: "Privacy", href: "/privacy" },
 									{ label: "Terms", href: "/terms" },
-								],
-							},
-							{
-								title: "Social",
-								links: [
-									{ label: "X (Twitter)", href: "#" },
-									{ label: "GitHub", href: "#" },
-									{ label: "LinkedIn", href: "#" },
 								],
 							},
 						].map((group) => (
