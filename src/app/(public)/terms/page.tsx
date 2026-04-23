@@ -7,7 +7,8 @@ export default function TermsPage() {
 						Terms of Service
 					</h1>
 					<p className="text-muted-foreground font-light">
-						Last updated: {new Date().toLocaleDateString("en-US", {
+						Last updated:{" "}
+						{new Date().toLocaleDateString("en-US", {
 							year: "numeric",
 							month: "long",
 							day: "numeric",
@@ -90,7 +91,9 @@ export default function TermsPage() {
 					},
 				].map((section) => (
 					<div key={section.title} className="space-y-4">
-						<h2 className="text-2xl font-semibold">{section.title}</h2>
+						<h2 className="text-2xl font-semibold">
+							{section.title}
+						</h2>
 						<p className="text-muted-foreground font-light leading-relaxed">
 							{section.content}
 						</p>
